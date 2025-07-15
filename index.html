@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>موقعك والطقس الآن</title>
+  <style>
+    #map { height: 400px; margin-top: 20px; }
+    body { font-family: sans-serif; direction: rtl; padding: 20px; background: #f9f9f9; }
+    #location-data, #weather { background: #fff; padding: 15px; margin-top: 15px; border-radius: 10px; box-shadow: 0 0 5px #ccc; }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+<h2 id="welcome">جارٍ تحديد موقعك...</h2>
+<div id="location-data"></div>
+<div id="weather">جاري جلب بيانات الطقس...</div>
+<div id="map"></div>
+
+<script>
+  const weatherApiKey = "0471c0b5c3db3e12e6a41ba29936ff40"; 
+
+  async function fetchLocationDetails(lat, lon) {
+    const apiKey = "f49ccacc6ee2411daac4e9d251fa66e7";
+    const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${apiKey}&language=ar`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const components = data.results[0]?.components;
+
+    return {
+      city: components.city || components.town || components.state || "موقع غير معروف",
+      country: components.country || "غير معروف",
+      suburb: components.suburb || "غير معروف",
+      postcode: components.postcode || "غير معروف"
+    };
+  }
+
+  async function fetchWeather(lat, lon) {
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${weatherApiKey}&units=metric&lang=ar`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    return {
+      temp: data.main.temp,
+      humidity: data.main.humidity,
+      description: data.weather[0].description,
+      cityName: data.name
+    };
+  }
+
+  navigator.geolocation.getCurrentPosition(async function(position) {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+
+    const details = await fetchLocationDetails(lat, lon);
+    document.getElementById("welcome").textContent = `مرحبًا بك في ${details.city} 😊`;
+    document.getElementById("location-data").innerHTML = `
+      <strong>الدولة:</strong> ${details.country}<br>
+      <strong>المنطقة:</strong> ${details.suburb}<br>
+      <strong>الرمز البريدي:</strong> ${details.postcode}<br>
+      <strong>الإحداثيات:</strong> (${lat.toFixed(5)}, ${lon.toFixed(5)})
+    `;
+
+    const weather = await fetchWeather(lat, lon);
+    document.getElementById("weather").innerHTML = `
+      <strong>المدينة:</strong> ${weather.cityName}<br>
+      <strong>الطقس:</strong> ${weather.description}<br>
+      <strong>درجة الحرارة:</strong> ${weather.temp}°C<br>
+      <strong>الرطوبة:</strong> ${weather.humidity}%
+    `;
+
+    // خريطة
+    const map = L.map('map').setView([lat, lon], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    L.marker([lat, lon]).addTo(map)
+      .bindPopup(`أنت هنا: ${details.city}`)
+      .openPopup();
+
+  }, function(error) {
+    document.getElementById("welcome").textContent = "❌ لم نتمكن من تحديد موقعك.";
+    console.error(error);
+  });
+</script>
+
+</body>
+</html>
