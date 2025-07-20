@@ -2,6 +2,7 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>موقعك والطقس الآن</title>
   <style>
     #map { height: 400px; margin-top: 20px; }
@@ -20,27 +21,30 @@
 
 <script>
   const weatherApiKey = "0471c0b5c3db3e12e6a41ba29936ff40"; 
-
+  const apiKey = "f49ccacc6ee2411daac4e9d251fa66e7";
+  //
   async function fetchLocationDetails(lat, lon) {
-    const apiKey = "f49ccacc6ee2411daac4e9d251fa66e7";
     const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${apiKey}&language=ar`;
     const res = await fetch(url);
     const data = await res.json();
     const components = data.results[0]?.components;
-
+   
     return {
       city: components.city || components.town || components.state || "موقع غير معروف",
       country: components.country || "غير معروف",
-      suburb: components.suburb || "غير معروف",
-      postcode: components.postcode || "غير معروف"
+      road: components.road ,
+      postcode: components.postcode || "غير معروف",
+      continent: components.continent
     };
   }
-
+  //
+  
+  //
   async function fetchWeather(lat, lon) {
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${weatherApiKey}&units=metric&lang=ar`;
     const res = await fetch(url);
     const data = await res.json();
-
+    
     return {
       temp: data.main.temp,
       humidity: data.main.humidity,
@@ -48,18 +52,19 @@
       cityName: data.name
     };
   }
-
-  navigator.geolocation.getCurrentPosition(async function(position) {
+ //
+ //
+  navigator.geolocation.watchPosition(async function(position) {
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
-
 
     const details = await fetchLocationDetails(lat, lon);
     document.getElementById("welcome").textContent = `مرحبًا بك في ${details.city} 😊`;
     document.getElementById("location-data").innerHTML = `
       <strong>الدولة:</strong> ${details.country}<br>
-      <strong>المنطقة:</strong> ${details.suburb}<br>
+      <strong>المنطقة:</strong> ${details.road}<br>
       <strong>الرمز البريدي:</strong> ${details.postcode}<br>
+      <strong>القارة :</strong> ${details.continent}<br>
       <strong>الإحداثيات:</strong> (${lat.toFixed(5)}, ${lon.toFixed(5)})
     `;
 
@@ -70,21 +75,21 @@
       <strong>درجة الحرارة:</strong> ${weather.temp}°C<br>
       <strong>الرطوبة:</strong> ${weather.humidity}%
     `;
-
-    // خريطة
+   //
     const map = L.map('map').setView([lat, lon], 15);
+    
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
+
     }).addTo(map);
 
     L.marker([lat, lon]).addTo(map)
       .bindPopup(`أنت هنا: ${details.city}`)
       .openPopup();
-
+  //
   }, function(error) {
-    document.getElementById("welcome").textContent = "❌ لم نتمكن من تحديد موقعك.";
-    console.error(error);
+    document.getElementById("welcome").textContent = "Not Available Location please Check Setting to run";
   });
+  //
 </script>
 
 </body>
