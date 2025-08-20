@@ -1,0 +1,281 @@
+:root {
+ --color-primary: #1a1a1a;
+ --color-secondary: #f0f0f0;
+}
+
+body {
+ margin: 0;
+ font-family: Arial, sans-serif;
+ background-color: var(--color-primary);
+ color: var(--color-secondary);
+ direction: rtl;
+}
+
+/* Loading Bar */
+.loading-bar {
+ position: fixed;
+ top: 0;
+ left: 0;
+ height: 5px;
+ background-color: #00e0ff; /* لون سماوي جذاب */
+ width: 0%;
+ z-index: 1000;
+ box-shadow: 0 0 10px #00e0ff, 0 0 20px #00e0ff; /* تأثير توهج */
+}
+
+.loading-bar.active {
+ width: 100%;
+ transition: width 2s linear;
+}
+
+/* Hero Section */
+.hero-section {
+ position: relative;
+ height: 100vh;
+ width: 100%;
+ overflow: hidden;
+}
+
+/* New background for the blurred effect */
+.hero-section::before {
+ content: '';
+ position: absolute;
+ top: -20px;
+ right: -20px;
+ bottom: -20px;
+ left: -20px;
+ background-image: var(--background-image-url);
+ background-size: cover;
+ background-position: center;
+ filter: blur(25px); /* تأثير التمويه (Blur) */
+ transform: scale(1.1);
+ z-index: 1;
+ transition: background-image 1s ease-in-out; /* انتقال سلس بين الصور */
+}
+
+.background-image-container {
+ position: absolute;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ z-index: 2; /* لضمان أن الصورة الرئيسية فوق الخلفية المموهة */
+}
+
+.hero-image {
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ opacity: 0;
+ transition: opacity 1s ease-in-out;
+}
+
+.hero-image.show {
+ opacity: 1;
+}
+
+/* Carousel */
+.carousel-container {
+ position: relative;
+ height: 100%;
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ z-index: 3; /* لضمان أن الكاروسيل فوق الخلفية المموهة والصورة الرئيسية */
+}
+
+.image-selector {
+ position: absolute;
+ bottom: 20px;
+ display: flex;
+ justify-content: center;
+ gap: 10px;
+ z-index: 20;
+}
+
+.image-thumbnail {
+ width: 80px;
+ height: 80px;
+ overflow: hidden;
+ border-radius: 10px;
+ border: 2px solid transparent;
+ cursor: pointer;
+ transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.image-thumbnail.active {
+ border-color: #ff0000;
+ transform: scale(1.2);
+ box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.image-thumbnail img {
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+}
+
+/* New CSS for the dots */
+.dot-selector {
+ position: absolute;
+ bottom: 120px; /* Adjust position to be above the thumbnails */
+ display: flex;
+ justify-content: center;
+ gap: 10px;
+ z-index: 20;
+}
+
+.dot {
+ width: 12px;
+ height: 12px;
+ background-color: rgba(255, 255, 255, 0.4);
+ border-radius: 50%;
+ cursor: pointer;
+ transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.dot.active {
+ background-color: #ff0000;
+ transform: scale(1.2);
+}
+
+.slider {
+ position: relative;
+ width: 80%;
+ height: 50%;
+ overflow: hidden;
+ margin-top: 50px;
+}
+
+.slide {
+ position: absolute;
+ width: 100%;
+ height: 100%;
+ opacity: 0;
+ transition: opacity 1s ease;
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ text-align: center;
+}
+
+.slide.active {
+ opacity: 1;
+}
+
+.slide.active .content h1 {
+ animation: slideUp 0.8s ease-out forwards;
+ animation-delay: 0.1s;
+}
+
+.slide.active .content small {
+ animation: slideUp 0.8s ease-out forwards;
+ animation-delay: 0.2s;
+}
+
+.slide.active .content p {
+ animation: slideUp 0.8s ease-out forwards;
+ animation-delay: 0.3s;
+}
+
+@keyframes slideUp {
+ from {
+  opacity: 0;
+  transform: translateY(30px);
+ }
+ to {
+  opacity: 1;
+  transform: translateY(0);
+ }
+}
+
+.content h1,
+.content small,
+.content p {
+ opacity: 0;
+}
+
+.content h1 {
+ font-size: 3rem;
+ margin-bottom: 0.5rem;
+}
+
+.content small {
+ font-size: 1.2rem;
+ color: #ccc;
+}
+
+.content p {
+ font-size: 1rem;
+ max-width: 600px;
+}
+
+button {
+ background: rgba(255, 255, 255, 0.2);
+ border: none;
+ border-radius: 5px;
+ padding: 10px 20px;
+ color: #fff;
+ cursor: pointer;
+ transition: background 0.3s ease;
+ backdrop-filter: blur(5px);
+ margin-top: 20px;
+}
+
+button:hover {
+ background: rgba(255, 255, 255, 0.4);
+}
+
+.custom-nav {
+ position: absolute;
+ top: 50%;
+ transform: translateY(-50%);
+ width: 100%;
+ display: flex;
+ justify-content: space-between;
+ padding: 0 20px;
+ z-index: 30;
+}
+
+.custom-nav .arrow {
+ background: rgba(255, 255, 255, 0.2);
+ border: none;
+ border-radius: 50%;
+ cursor: pointer;
+ padding: 10px;
+ transition: all 0.3s ease;
+ backdrop-filter: blur(5px);
+}
+
+.custom-nav .arrow:hover {
+ background: rgba(255, 255, 255, 0.4);
+}
+
+.custom-nav .arrow img {
+ width: 20px;
+ height: 20px;
+}
+.thumbnail-clone {
+  position: absolute;
+  z-index: 999;
+  object-fit: cover;
+  border-radius: 10px;
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  width: 100%;
+  height: 100%;
+}
+
+
+.thumbnail-clone:hover {
+  transform: scale(1.1);
+  filter: brightness(1.3);
+}
+
+.image-thumbnail.active {
+  border-color: #ff0000;
+  transform: scale(1.2) rotate(5deg); /* تأثير التدوير والتكبير */
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
